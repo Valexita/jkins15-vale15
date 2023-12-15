@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  plex:
+    image: docker-on-plex
+    container_name: plex-compose
+    expose:
+      - 32400:32400/tcp
+    volumes:
+      - /config
+      - /media

@@ -1,0 +1,37 @@
+pipeline {
+    agent any 
+    environment{
+        DOCKERHUB_CREDENTIALS = credentials ('dockerhub')
+        RepoDockerHub = 'valemor'
+        NameContainer = 'jnkins15'
+    }
+    stages {
+        stage('Build') { 
+            steps {
+                echo "RepoDockerHub: ${env.RepoDockerHub}"
+                echo "NameContainer: ${env.NameContainer}"
+                echo "BUILD_NUMBER: ${env.BUILD_NUMBER}"
+
+                sh "docker build -t ${env.RepoDockerHub}/${env.NameContainer}:${env.BUILD_NUMBER} ."
+            }
+        }
+
+        stage('Run Test') {
+            steps {
+                echo "Running tests..." 
+            }
+        }
+
+        stage('Login to Dockerhub') {
+            steps {
+                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+            }
+        }
+
+        stage('Push to Dockerhub') { 
+            steps {
+                sh "docker push ${env.RepoDockerHub}/${env.NameContainer}:${env.BUILD_NUMBER}"
+            }
+        }
+    }
+}
